@@ -1,0 +1,136 @@
+import 'dart:collection';
+
+class TreeNode {
+  int value;
+  TreeNode? left;
+  TreeNode? right;
+
+  TreeNode(this.value);
+}
+
+class BinaryTree {
+  TreeNode? root;
+
+  void addLevelOrder(int value) {
+    TreeNode newNode = TreeNode(value);
+    if (root == null) {
+      root = newNode;
+      return;
+    }
+
+    Queue<TreeNode> queue = Queue<TreeNode>();
+    queue.add(root!);
+    while (queue.isNotEmpty) {
+      TreeNode current = queue.removeFirst();
+      if (current.left == null) {
+        current.left = newNode;
+        return;
+      } else {
+        queue.add(current.left!);
+      }
+      if (current.right == null) {
+        current.right = newNode;
+        return;
+      } else {
+        queue.add(current.right!);
+      }
+    }
+  }
+
+  bool addByTarget(int target, int value) {
+    if (root == null) return false;
+
+    Queue<TreeNode> queue = Queue<TreeNode>();
+    queue.add(root!);
+    while (queue.isNotEmpty) {
+      TreeNode current = queue.removeFirst();
+      if (current.value == target) {
+        if (current.left == null) {
+          current.left = TreeNode(value);
+          return true;
+        } else if (current.right == null) {
+          current.right = TreeNode(value);
+          return true;
+        } else {
+          return false;
+        }
+      }
+      if (current.left != null) queue.add(current.left!);
+      if (current.right != null) queue.add(current.right!);
+    }
+
+    return false;
+  }
+
+  List<int> inOrderTraversal() {
+    List<int> result = [];
+    List<TreeNode> stack = [];
+    TreeNode? current = root;
+
+    while (current != null || stack.isNotEmpty) {
+      while (current != null) {
+        stack.add(current);
+        current = current.left;
+      }
+      current = stack.removeLast();
+      result.add(current.value);
+      current = current.right;
+    }
+    return result;
+  }
+
+  List<int> preOrderTraversal() {
+    List<int> result = [];
+    if (root == null) return result;
+
+    List<TreeNode> stack = [root!];
+    while (stack.isNotEmpty) {
+      TreeNode current = stack.removeLast();
+      result.add(current.value);
+      if (current.right != null) stack.add(current.right!);
+      if (current.left != null) stack.add(current.left!);
+    }
+    return result;
+  }
+
+  List<int> postOrderTraversal() {
+    List<int> result = [];
+    if (root == null) return result;
+
+    List<TreeNode> stack = [];
+    TreeNode? current = root;
+    TreeNode? lastVisited;
+
+    while (current != null || stack.isNotEmpty) {
+      while (current != null) {
+        stack.add(current);
+        current = current.left;
+      }
+      TreeNode peek = stack.last;
+      if (peek.right == null || peek.right == lastVisited) {
+        result.add(peek.value);
+        lastVisited = stack.removeLast();
+        current = null;
+      } else {
+        current = peek.right;
+      }
+    }
+    return result;
+  }
+}
+
+void main() {
+  BinaryTree tree = BinaryTree();
+  tree.addLevelOrder(10);
+  tree.addLevelOrder(5);
+  tree.addLevelOrder(15);
+  tree.addLevelOrder(3);
+  tree.addLevelOrder(7);
+
+  print("In Order: ${tree.inOrderTraversal()}");
+  print("Pre Order: ${tree.preOrderTraversal()}");
+  print("Post Order: ${tree.postOrderTraversal()}");
+
+  tree.addByTarget(3, 4); 
+  print("In Order setelah tambah 3 di bawah 4 ${tree.inOrderTraversal()}");
+}
