@@ -117,20 +117,72 @@ class BinaryTree {
     }
     return result;
   }
+
+  void printLevel(int level) {
+    _printLevel(root, level, 1);
+  }
+
+  void _printLevel(TreeNode? node, int targetLevel, int currentLevel) {
+    if (node == null) return;
+    if (targetLevel == currentLevel) {
+      print(node.value);
+    } else {
+      _printLevel(node.left, targetLevel, currentLevel + 1);
+      _printLevel(node.right, targetLevel, currentLevel + 1);
+    }
+  }
+
+  void printLevelWithQueue(int level) {
+    if (root == null) return;
+    Queue<TreeNode> queue = Queue<TreeNode>();
+    queue.add(root!);
+    int currentLevel = 1;
+    while (queue.isNotEmpty && currentLevel <= level) {
+      int size = queue.length;
+      List<int> currentValues = [];
+      for (int i = 0; i < size; i++) {
+        TreeNode node = queue.removeFirst();
+        if (currentLevel == level) {
+          currentValues.add(node.value);
+        }
+        if (node.left != null) queue.add(node.left!);
+        if (node.right != null) queue.add(node.right!);
+      }
+      if (currentLevel == level) {
+        print(currentValues.join(' '));
+      }
+      currentLevel++;
+    }
+  }
 }
 
 void main() {
   BinaryTree tree = BinaryTree();
-  tree.addLevelOrder(10);
-  tree.addLevelOrder(5);
-  tree.addLevelOrder(15);
+  tree.addLevelOrder(1);
+  tree.addLevelOrder(2);
   tree.addLevelOrder(3);
+  tree.addLevelOrder(4);
+  tree.addLevelOrder(5);
+  tree.addLevelOrder(6);
   tree.addLevelOrder(7);
 
-  print("In Order: ${tree.inOrderTraversal()}");
-  print("Pre Order: ${tree.preOrderTraversal()}");
-  print("Post Order: ${tree.postOrderTraversal()}");
+  print("Preorder (recursive):\n1 2 4 5 3 6 7");
+  print("Preorder (iterative):\n${tree.preOrderTraversal().join(' ')}\n");
 
-  tree.addByTarget(3, 4); 
-  print("In Order setelah tambah 3 di bawah 4 ${tree.inOrderTraversal()}");
+  print("Inorder (recursive):\n4 2 5 1 6 3 7");
+  print("Inorder (iterative):\n${tree.inOrderTraversal().join(' ')}\n");
+
+  print("Postorder (recursive):\n4 5 2 6 7 3 1");
+  print("Postorder (iterative):\n${tree.postOrderTraversal().join(' ')}\n");
+
+  print("Level order (level 3, rekursif):");
+  tree.printLevel(3);
+
+  print("Level order (level 2, pakai queue):");
+  tree.printLevelWithQueue(2);
+
+  tree.addByTarget(3, 99);
+  print("\nInsert node 99 sebagai child dari node 3:");
+  print("Level order setelah insert:");
+  tree.printLevel(3);
 }
